@@ -643,3 +643,70 @@ class Algorithm:
         print(best_path)
         return total_path
     
+Algorithm:
+1. Define a function, minimax, that takes parameters for the current depth, node index, turn flag (max or min), scores list, and the target depth.
+2. Check if the current depth is equal to the target depth. If it is, return the score associated with the current node index.
+3. If it is the max turn, return the maximum value from the two recursive calls of minimax with updated depth, node index, and turn for the left and right child nodes.
+4. If it is not the max turn, return the minimum value from the two recursive calls of minimax with updated depth, node index, and turn for the left and right child nodes.
+5. Define the scores list, representing the values associated with each node in the tree.
+6. Calculate the tree depth based on the logarithm of the number of elements in the scores list.
+7. Print the optimal value obtained by calling the minimax function with initial parameters.
+
+Program:
+import math
+
+def minimax (curDepth, nodeIndex, maxTurn, scores, targetDepth):
+    if (curDepth == targetDepth):   
+        return scores[nodeIndex]
+    if (maxTurn):
+        return max(minimax(curDepth + 1, nodeIndex * 2, False, scores, targetDepth),
+                   minimax(curDepth + 1, nodeIndex * 2 + 1, False, scores, targetDepth))
+    else:
+        return min(minimax(curDepth + 1, nodeIndex * 2, True, scores, targetDepth),
+                   minimax(curDepth + 1, nodeIndex * 2 + 1, True, scores, targetDepth))
+scores = [4,8,9,3,2,-2,9,-1]
+treeDepth = math.log(len(scores), 2)
+print("\nThe optimal value is : ", minimax(0, 0, True, scores, treeDepth))
+
+Algorithm:
+1. The `minimax` function now takes two additional parameters, `alpha` and `beta`, which represent the best values that the maximizing and minimizing players, respectively, can guarantee.
+2. Within the `minimax` function, when the `maxTurn` is True, the function initializes the variable `best` as negative infinity and iterates through the child nodes to find the maximum value. It also updates the value of `alpha` and performs pruning if the beta value is less than or equal to the alpha value.
+3. When the `maxTurn` is False, the function initializes the `best` variable as positive infinity and iterates through the child nodes to find the minimum value. It updates the value of `beta` and performs pruning if the beta value is less than or equal to the alpha value.
+4. The code displays a message when a pruning operation occurs, indicating the depth, index, value, and the pruned child.
+5. The `scores` list contains the values associated with each node in the tree.
+6. The code calculates the tree depth based on the logarithm of the number of elements in the `scores` list.
+7. The `minimax` function returns the best value, along with the current depth and node index.
+
+Program:
+import math
+
+def minimax(curDepth, nodeIndex, maxTurn, scores, targetDepth, alpha, beta):
+    if curDepth == targetDepth:
+        return scores[nodeIndex], curDepth, nodeIndex
+    if maxTurn:
+        best = -math.inf
+        for i in range(2):
+            val, d, ind = minimax(curDepth + 1, nodeIndex * 2 + i, False, scores, targetDepth, alpha, beta)
+            if val > best:
+                best = val
+            alpha = max(alpha, best)
+            if beta <= alpha:
+                print(f"Pruned at depth {d}, index {ind}, value {val}'s right child")
+                break
+        return best, curDepth, nodeIndex
+    else:
+        best = math.inf
+        for i in range(2):
+            val, d, ind = minimax(curDepth + 1, nodeIndex * 2 + i, True, scores, targetDepth, alpha, beta)
+            if val < best:
+                best = val
+            beta = min(beta, best)
+            if beta <= alpha:
+                print(f"Pruned at depth {d}, index {ind}, value {val}'s right child")
+                break
+        return best, curDepth, nodeIndex
+
+scores = [4, 8, 9, 3, 2, -2, 9, -1]
+treeDepth = math.log(len(scores), 2)
+print("\nThe optimal value is:", minimax(0, 0, True, scores, treeDepth, -math.inf, math.inf))
+
